@@ -1,0 +1,11 @@
+{
+  "schedule_times": ["09:30", "13:15", "18:00", "21:30"],
+  "jitter_minutes": 10,
+  "default_caption": "Highlight of the day! 🔥 Follow for more clips.\n.\n.\n.\n#reels #viral #trending #reelsinstagram #explorepage",
+  "paths": {
+    "queue": "queue",
+    "posted": "posted",
+    "session": "session.json",
+    "log": "logs/uploader.log"
+  }
+}

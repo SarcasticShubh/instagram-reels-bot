@@ -1,0 +1,25 @@
+# Environment & Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Sensitive Credentials & Cookies (NEVER commit these)
+.env
+session.json
+
+# Video Storage & Archives
+queue/*
+!queue/.gitkeep
+posted/*
+!posted/.gitkeep
+
+# Logs & Cache
+logs/
+*.log
+__pycache__/
+*.pyc
+
+# OS generated
+.DS_Store
+Thumbs.db
