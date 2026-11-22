@@ -7,6 +7,9 @@ env/
 # Sensitive Credentials & Cookies (NEVER commit these)
 .env
 session.json
+client_secret*.json
+youtube_token*.json
+token*.json
 
 # Video Storage & Archives
 queue/*

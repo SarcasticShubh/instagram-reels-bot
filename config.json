@@ -3,6 +3,16 @@
   "jitter_minutes": 10,
   "account_handle": "@gta6chronicles3",
   "default_caption": "Highlight of the day! 🔥 Follow for more clips.\n.\n.\n.\n#reels #viral #trending #reelsinstagram #explorepage",
+  "platforms": {
+    "instagram": true,
+    "youtube": true
+  },
+  "youtube": {
+    "privacy_status": "public",
+    "category_id": "20",
+    "client_secret_file": "client_secret.json",
+    "token_file": "youtube_token.json"
+  },
   "paths": {
     "queue": "queue",
     "posted": "posted",

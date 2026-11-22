@@ -93,14 +93,12 @@ class CaptionGenerator:
         random.shuffle(selected)
         return " ".join(selected[:total_tags])
 
-    def generate(self, custom_account="@gta6chronicles3"):
-        """Generate a fresh, unique viral caption with smart rotation."""
-        # Pick a hook that wasn't used recently
+    def generate_metadata(self, custom_account="@gta6chronicles3") -> dict:
+        """Generate structured metadata suitable for both Instagram Reels and YouTube Shorts."""
         recent_hooks = self.history.get("used_hooks", [])
         available_hooks = [h for h in VIRAL_HOOKS if h not in recent_hooks]
         
         if not available_hooks:
-            # If all were used, reset history pool
             available_hooks = VIRAL_HOOKS
             recent_hooks = []
 
@@ -118,15 +116,44 @@ class CaptionGenerator:
         self.history["used_hooks"] = recent_hooks
         self._save_history()
 
-        caption = f"{hook}\n\n{cta}\n.\n.\n.\n{tags}"
-        return caption
+        instagram_caption = f"{hook}\n\n{cta}\n.\n.\n.\n{tags}"
+
+        # YouTube Shorts title (max 100 chars, append #Shorts)
+        base_title = hook.strip()
+        if len(base_title) > 85:
+            base_title = base_title[:82].rstrip() + "..."
+        yt_title = f"{base_title} #Shorts"
+        
+        yt_desc = f"{hook}\n\n{cta}\n\nSubscribe for daily highlights! 🔥\n\n{tags}\n\n#Shorts"
+
+        clean_tags = [t.lstrip("#") for t in tags.split() if t.startswith("#")]
+
+        return {
+            "hook": hook,
+            "cta": cta,
+            "instagram_caption": instagram_caption,
+            "youtube_title": yt_title,
+            "youtube_description": yt_desc,
+            "tags": clean_tags,
+        }
+
+    def generate(self, custom_account="@gta6chronicles3"):
+        """Generate a fresh, unique viral caption with smart rotation."""
+        return self.generate_metadata(custom_account=custom_account)["instagram_caption"]
 
 
 _generator = None
 
 def get_viral_caption(custom_account="@gta6chronicles3") -> str:
-    """Convenience helper to generate a viral caption."""
+    """Convenience helper to generate a viral caption for Instagram Reels."""
     global _generator
     if _generator is None:
         _generator = CaptionGenerator()
     return _generator.generate(custom_account=custom_account)
+
+def get_viral_metadata(custom_account="@gta6chronicles3") -> dict:
+    """Convenience helper to generate coordinated metadata for Reels & YouTube Shorts."""
+    global _generator
+    if _generator is None:
+        _generator = CaptionGenerator()
+    return _generator.generate_metadata(custom_account=custom_account)

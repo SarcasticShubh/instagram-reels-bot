@@ -1,67 +1,71 @@
-# Instagram Reels Auto-Uploader Bot
+# Multi-Platform Reels & Shorts Auto-Uploader Bot
 
-An automated Reels uploader built with `instagrapi` that safely schedules and posts videos from a local queue.
+An automated publisher for **Instagram Reels** and **YouTube Shorts** that safely schedules and cross-posts videos from a local queue.
 
 ---
 
 ## Key Features
 
-- **⚡ Automated Scheduling:** Posts up to 4 reels per day across peak engagement windows with randomized human jitter (±10 min).
-- **🔥 Dynamic Viral Captions:** Automatically rotates engaging hooks, call-to-actions, and hashtag clusters so no two reels share the exact same caption or tags.
-- **🛡️ Anti-Spam Tag Balancing:** Draws from themed hashtag pools (Core GTA, Viral/Explore, Gaming Community) to avoid Instagram's repeated-hashtag penalty.
-- **💾 Session Persistence:** Safely caches authenticated session cookies in `session.json`—no re-logging required.
-- **📁 Smart Queue & Archiving:** Automatically moves published clips from `queue/` to `posted/`.
+- **⚡ Multi-Platform Cross-Posting:** Publishes simultaneously to **Instagram Reels** and **YouTube Shorts** (platforms can be toggled independently in `config.json`).
+- **🔥 Dynamic Viral Captions & Titles:** Automatically generates engaging hooks, calls-to-action, and hashtag clusters for Instagram, plus punchy `<100` char `#Shorts` titles and descriptions for YouTube.
+- **🛡️ Anti-Repetition & Anti-Spam Memory:** Tracks recently used hooks in `logs/caption_history.json` to prevent consecutive repetition, and rotates hashtags across multiple clusters.
+- **💾 Dual Session Persistence:** 
+  - Instagram: Session cookies cached in `session.json`.
+  - YouTube: Official Google OAuth 2.0 with auto-refreshing tokens stored in `youtube_token.json`.
+- **📁 Queue & Auto-Archiving:** Drops videos in `queue/` and archives published clips in `posted/`.
 
 ---
 
 ## Directory Overview
 
-- `caption_generator.py`: Smart engine that generates diverse viral hooks, CTAs, and tag combinations.
+- `uploader.py`: Main cross-platform scheduler and publisher.
+- `youtube_uploader.py`: YouTube Data API v3 uploader and OAuth manager.
+- `caption_generator.py`: Smart caption, title, and hashtag rotation engine.
 - `queue/`: Drop your `.mp4` video clips here.
 - `posted/`: Successfully published videos are automatically archived here.
-- `config.json`: Change scheduled times, jitter window, account handle, and paths.
-- `session.json`: Stores your authenticated session cookies safely.
-- `logs/uploader.log`: Detailed execution log.
+- `config.json`: Platform toggles, scheduled times, jitter window, and paths.
+- `run.sh`: Convenient command runner for status, logins, and background service.
 
 ---
 
-## Quick Start
+## Setup & Quick Start
 
-### 1. Perform Initial Login (One-time)
-Run the login command in your terminal:
+### 1. Instagram Setup (One-time)
+Authenticate using your web browser cookie:
 ```bash
-cd ~/instagram_reels_bot
-./run.sh login
+./run.sh sessionid "YOUR_SESSION_ID"
 ```
-*(Or authenticate using your web browser cookie via `./run.sh sessionid "YOUR_SESSION_ID"`).*
 
-### 2. Add Videos to Queue
-Copy any `.mp4` files into the `queue/` folder:
+### 2. YouTube Shorts Setup (One-time)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project.
+2. Enable the **YouTube Data API v3**.
+3. Under **APIs & Services > Credentials**, create **OAuth 2.0 Client ID** (select **Desktop App**).
+4. Download the JSON file, rename it to `client_secret.json`, and place it in this directory (`~/instagram_reels_bot/client_secret.json`).
+5. Run the one-time authorization:
+```bash
+./run.sh yt-login
+```
+*(Your browser will open to log in with your YouTube Google account and grant upload permissions. Subsequent uploads refresh automatically).*
+
+---
+
+### 3. Add Videos to Queue
+Copy any `.mp4` video files into `queue/`:
 ```bash
 cp /path/to/my_clip.mp4 ~/instagram_reels_bot/queue/
 ```
-*(Optional: If you want a specific custom caption for `my_clip.mp4`, drop a text file named `my_clip.txt` next to it. Otherwise, the bot will auto-generate a fresh viral caption and tags).*
+*(Optional: If you want a specific custom caption for `my_clip.mp4`, drop a text file named `my_clip.txt` next to it).*
 
-### 3. Test a Single Upload
-To test publishing immediately without waiting for the schedule:
-```bash
-./run.sh post-now
-```
+---
 
-### 4. Check Queue & Status
-```bash
-./run.sh status
-```
+### 4. Commands Reference
 
-### 5. Start the Continuous Scheduler (4 Reels / day)
-```bash
-./run.sh start
-```
-To stop the background bot:
-```bash
-./run.sh stop
-```
-To monitor live logs:
-```bash
-tail -f logs/uploader.log
-```
+| Command | Description |
+| :--- | :--- |
+| `./run.sh status` | Check queue count and connection status for both platforms |
+| `./run.sh post-now` | Publish the next queued video immediately to active platforms |
+| `./run.sh yt-login` | Authenticate with YouTube (Google OAuth) |
+| `./run.sh yt-status` | View YouTube channel name, subscriber count, and video count |
+| `./run.sh start` | Start the background scheduler (4 posts/day) |
+| `./run.sh stop` | Stop the background scheduler |
+| `tail -f logs/uploader.log` | View live execution logs |
