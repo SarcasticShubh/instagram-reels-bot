@@ -71,9 +71,9 @@ def get_authenticated_service(client_secret_path: Path = None, token_path: Path 
         flow = InstalledAppFlow.from_client_secrets_file(str(client_secret_path), SCOPES)
         try:
             creds = flow.run_local_server(port=0, open_browser=True)
-        except Exception as e:
-            logger.info(f"Local browser server not available ({e}), falling back to console flow...")
-            creds = flow.run_console()
+        except Exception:
+            logger.info("Could not launch browser automatically. Printing URL...")
+            creds = flow.run_local_server(port=0, open_browser=False)
 
         with open(token_path, "w", encoding="utf-8") as f:
             f.write(creds.to_json())
