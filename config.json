@@ -1,6 +1,7 @@
 {
   "schedule_times": ["09:30", "13:15", "18:00", "21:30"],
   "jitter_minutes": 10,
+  "account_handle": "@gta6chronicles3",
   "default_caption": "Highlight of the day! 🔥 Follow for more clips.\n.\n.\n.\n#reels #viral #trending #reelsinstagram #explorepage",
   "paths": {
     "queue": "queue",

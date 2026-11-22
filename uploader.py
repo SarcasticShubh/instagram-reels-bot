@@ -19,6 +19,7 @@ from instagrapi.exceptions import (
     TwoFactorRequired,
     BadPassword,
 )
+from caption_generator import get_viral_caption
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -158,7 +159,7 @@ def get_next_video():
 
 
 def get_caption_for_video(video_path: Path):
-    """Check if a matching .txt exists for custom caption, otherwise use default."""
+    """Check if a matching .txt exists for custom caption, otherwise generate dynamic viral caption."""
     txt_path = video_path.with_suffix(".txt")
     if txt_path.exists():
         try:
@@ -169,7 +170,15 @@ def get_caption_for_video(video_path: Path):
         except Exception as e:
             logger.warning(f"Failed to read custom caption from {txt_path}: {e}")
 
-    return CONFIG.get("default_caption", "Daily Reel 🔥 #reels #explore")
+    # Generate a fresh viral hook + CTA + rotated tag set
+    account_handle = CONFIG.get("account_handle", "@gta6chronicles3")
+    try:
+        caption = get_viral_caption(custom_account=account_handle)
+        logger.info(f"Generated dynamic viral caption for {video_path.name}")
+        return caption
+    except Exception as e:
+        logger.warning(f"Failed to generate dynamic caption, falling back to default: {e}")
+        return CONFIG.get("default_caption", "Daily Reel 🔥 #reels #explore")
 
 
 def post_next_reel(apply_jitter=False):
